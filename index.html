@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>名單公告</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #f5f5f5;
+      padding: 20px;
+    }
+    .box {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 600px;
+      margin: auto;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+    li {
+      padding: 8px;
+      border-bottom: 1px solid #ddd;
+    }
+  </style>
+</head>
+<body>
+
+<div class="box">
+  <h1>名單公告</h1>
+  <input id="search" placeholder="搜尋名字">
+  <ul id="list"></ul>
+</div>
+
+<script>
+const names = [
+  "王小明",
+  "陳小華",
+  "林志玲",
+  "張偉",
+  "李佳玲"
+];
+
+const list = document.getElementById("list");
+const search = document.getElementById("search");
+
+function render(keyword="") {
+  list.innerHTML = "";
+  names
+    .filter(n => n.includes(keyword))
+    .forEach(n => {
+      const li = document.createElement("li");
+      li.textContent = n;
+      list.appendChild(li);
+    });
+}
+
+search.addEventListener("input", e => render(e.target.value));
+
+render();
+</script>
+
+</body>
+</html>
