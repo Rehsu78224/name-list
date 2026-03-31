@@ -1,61 +1,127 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>名單公告</title>
-  <style>
-    body {
-      font-family: Arial;
-      background: #f5f5f5;
-      padding: 20px;
-    }
-    .box {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      max-width: 600px;
-      margin: auto;
-    }
-    input {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 10px;
-    }
-    li {
-      padding: 8px;
-      border-bottom: 1px solid #ddd;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>名單公告</title>
+
+<style>
+body {
+  font-family: Arial;
+  background: #f5f5f5;
+  padding: 20px;
+}
+
+.container {
+  max-width: 1000px;
+  margin: auto;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
+
+th {
+  background: #333;
+  color: white;
+}
+</style>
 </head>
+
 <body>
 
-<div class="box">
+<div class="container">
   <h1>名單公告</h1>
-  <input id="search" placeholder="搜尋名字">
-  <ul id="list"></ul>
+  <input id="search" placeholder="搜尋姓名 / 單位 / 備註">
+
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>預算單位</th>
+        <th>員工代號</th>
+        <th>姓名</th>
+        <th>飲食</th>
+        <th>備註</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
 </div>
 
 <script>
-const names = [
-  "王小明",
-  "陳小華",
-  "林志玲",
-  "張偉",
-  "李佳玲"
+const data = [
+  {id:1, unit:"XE0", emp:"03OB55", name:"曾妤庭", food:"葷食", note:"自駕前往"},
+  {id:2, unit:"", emp:"", name:"邱子羿", food:"葷食", note:"自駕前往"},
+  {id:3, unit:"XX7", emp:"97C049", name:"黃寶慧", food:"葷食", note:""},
+  {id:4, unit:"XX5", emp:"10D011", name:"張鈞凱", food:"葷食", note:""},
+  {id:5, unit:"XX7", emp:"97D035", name:"廖麗華", food:"素食", note:""},
+  {id:6, unit:"XE7", emp:"08D038", name:"馮燕霞", food:"素食", note:""},
+  {id:7, unit:"XX7", emp:"00D032", name:"曾煒傑", food:"葷食", note:""},
+  {id:8, unit:"", emp:"", name:"林凰玉", food:"葷食", note:""},
+  {id:9, unit:"XX5", emp:"940076", name:"童漢彬", food:"葷食", note:""},
+  {id:10, unit:"", emp:"", name:"童瑞莎", food:"葷食", note:""},
+  {id:11, unit:"XX5", emp:"810510", name:"林錦水", food:"葷食", note:""},
+  {id:12, unit:"", emp:"", name:"林家辰", food:"葷食", note:""},
+  {id:13, unit:"XA6", emp:"09V007", name:"徐家德", food:"素食", note:""},
+  {id:14, unit:"", emp:"", name:"邱秋蓉", food:"葷食", note:""},
+  {id:15, unit:"", emp:"", name:"徐家媛", food:"葷食", note:""},
+  {id:16, unit:"", emp:"", name:"徐家信", food:"素食", note:""},
+  {id:17, unit:"XX8", emp:"09N053", name:"林鈺騰", food:"葷食", note:""},
+  {id:18, unit:"", emp:"", name:"簡惠美", food:"葷食", note:""},
+  {id:19, unit:"", emp:"", name:"林昀靜", food:"葷食", note:""},
+  {id:20, unit:"XE7", emp:"05C128", name:"邱明蓉", food:"葷食", note:""},
+
+  {id:26, unit:"XE0", emp:"12D020", name:"劉冠廷", food:"葷食", note:"自駕前往"},
+  {id:44, unit:"XE5", emp:"950110", name:"曾富田", food:"葷食", note:"自駕前往"},
+  {id:45, unit:"", emp:"07I258", name:"呂思柔", food:"葷食", note:"自駕前往"},
+  {id:108, unit:"XA5", emp:"065107", name:"狩谷綾子", food:"葷食", note:"工作人員"},
+  {id:109, unit:"XA5", emp:"020135", name:"徐福斌", food:"葷食", note:"工作人員"},
+  {id:112, unit:"XA5", emp:"085035", name:"曾貴瑛", food:"葷食", note:"工作人員"},
+  {id:115, unit:"XA1", emp:"A13101", name:"八波正洋", food:"葷食", note:"只參加上午活動"},
+  {id:116, unit:"", emp:"", name:"八波絵梨佳", food:"葷食", note:"只參加上午活動"}
 ];
 
-const list = document.getElementById("list");
+const tableBody = document.getElementById("tableBody");
 const search = document.getElementById("search");
 
 function render(keyword="") {
-  list.innerHTML = "";
-  names
-    .filter(n => n.includes(keyword))
-    .forEach(n => {
-      const li = document.createElement("li");
-      li.textContent = n;
-      list.appendChild(li);
+  tableBody.innerHTML = "";
+
+  data
+    .filter(d =>
+      Object.values(d).some(v =>
+        String(v).includes(keyword)
+      )
+    )
+    .forEach(d => {
+      const row = `
+        <tr>
+          <td>${d.id}</td>
+          <td>${d.unit}</td>
+          <td>${d.emp}</td>
+          <td>${d.name}</td>
+          <td>${d.food}</td>
+          <td>${d.note}</td>
+        </tr>
+      `;
+      tableBody.innerHTML += row;
     });
 }
 
