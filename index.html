@@ -5,15 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>名單公告</title>
 
-<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-
 <style>
 body {
   font-family: Arial;
   background: #f5f5f5;
   padding: 20px;
 }
-
 .container {
   max-width: 1000px;
   margin: auto;
@@ -21,23 +18,19 @@ body {
   padding: 20px;
   border-radius: 10px;
 }
-
 input {
   width: 100%;
   padding: 10px;
   margin-bottom: 10px;
 }
-
 table {
   width: 100%;
   border-collapse: collapse;
 }
-
 th, td {
   padding: 8px;
   border-bottom: 1px solid #ddd;
 }
-
 th {
   background: #333;
   color: white;
@@ -48,11 +41,9 @@ th {
 <body>
 
 <div class="container">
-  <h1>名單公告（Excel上傳）</h1>
-
-  <input type="file" id="upload" accept=".xlsx,.csv">
-  <input type="text" id="search" placeholder="搜尋">
-
+  <h1>名單公告</h1>
+  <input id="search" placeholder="搜尋姓名 / 單位 / 備註">
+  
   <table>
     <thead>
       <tr>
@@ -69,56 +60,152 @@ th {
 </div>
 
 <script>
-let rawData = [];
-
-document.getElementById('upload').addEventListener('change', handleFile);
-
-function handleFile(e) {
-  const file = e.target.files[0];
-  const reader = new FileReader();
-
-  reader.onload = function(evt) {
-    const data = new Uint8Array(evt.target.result);
-    const workbook = XLSX.read(data, { type: 'array' });
-
-    const sheet = workbook.Sheets[workbook.SheetNames[0]];
-    const json = XLSX.utils.sheet_to_json(sheet);
-
-    rawData = json;
-    render();
-  };
-
-  reader.readAsArrayBuffer(file);
-}
+const data = [
+{ id:1, unit:"XE0", emp:"03OB55", name:"曾妤庭", food:"葷食", note:"自駕前往"},
+{ id:2, unit:"", emp:"", name:"邱子羿", food:"葷食", note:"自駕前往"},
+{ id:3, unit:"XX7", emp:"97C049", name:"黃寶慧", food:"葷食", note:""},
+{ id:4, unit:"XX5", emp:"10D011", name:"張鈞凱", food:"葷食", note:""},
+{ id:5, unit:"XX7", emp:"97D035", name:"廖麗華", food:"素食", note:""},
+{ id:6, unit:"XE7", emp:"08D038", name:"馮燕霞", food:"素食", note:""},
+{ id:7, unit:"XX7", emp:"00D032", name:"曾煒傑", food:"葷食", note:""},
+{ id:8, unit:"", emp:"", name:"林凰玉", food:"葷食", note:""},
+{ id:9, unit:"XX5", emp:"940076", name:"童漢彬", food:"葷食", note:""},
+{ id:10, unit:"", emp:"", name:"童瑞莎", food:"葷食", note:""},
+{ id:11, unit:"XX5", emp:"810510", name:"林錦水", food:"葷食", note:""},
+{ id:12, unit:"", emp:"", name:"林家辰", food:"葷食", note:""},
+{ id:13, unit:"XA6", emp:"09V007", name:"徐家德", food:"素食", note:""},
+{ id:14, unit:"", emp:"", name:"邱秋蓉", food:"葷食", note:""},
+{ id:15, unit:"", emp:"", name:"徐家媛", food:"葷食", note:""},
+{ id:16, unit:"", emp:"", name:"徐家信", food:"素食", note:""},
+{ id:17, unit:"XX8", emp:"09N053", name:"林鈺騰", food:"葷食", note:""},
+{ id:18, unit:"", emp:"", name:"簡惠美", food:"葷食", note:""},
+{ id:19, unit:"", emp:"", name:"林昀靜", food:"葷食", note:""},
+{ id:20, unit:"XE7", emp:"05C128", name:"邱明蓉", food:"葷食", note:""},
+{ id:21, unit:"", emp:"", name:"陳淑君", food:"葷食", note:""},
+{ id:22, unit:"XE7", emp:"05C053", name:"尤慧湄", food:"葷食", note:""},
+{ id:23, unit:"", emp:"", name:"藍甲原", food:"葷食", note:""},
+{ id:24, unit:"", emp:"03C075", name:"劉芸萍", food:"葷食", note:""},
+{ id:25, unit:"", emp:"", name:"劉志偉", food:"葷食", note:""},
+{ id:26, unit:"XE0", emp:"12D020", name:"劉冠廷", food:"葷食", note:"自駕前往"},
+{ id:27, unit:"XA6", emp:"13V003", name:"吳政軒", food:"葷食", note:""},
+{ id:28, unit:"XE7", emp:"00C072", name:"陳虹萍", food:"葷食", note:""},
+{ id:29, unit:"", emp:"", name:"楊承霖", food:"葷食", note:""},
+{ id:30, unit:"XX5", emp:"935102", name:"張秋滿", food:"葷食", note:""},
+{ id:31, unit:"", emp:"", name:"黃敏昇", food:"葷食", note:""},
+{ id:32, unit:"XX7", emp:"90A009", name:"吳蕙玲", food:"葷食", note:""},
+{ id:33, unit:"", emp:"", name:"吳文財", food:"葷食", note:""},
+{ id:34, unit:"", emp:"", name:"吳蕙旻", food:"葷食", note:""},
+{ id:35, unit:"", emp:"", name:"吳堂揚", food:"葷食", note:""},
+{ id:36, unit:"XX5", emp:"13D024", name:"游智凱", food:"葷食", note:""},
+{ id:37, unit:"", emp:"", name:"侯雅婷", food:"葷食", note:""},
+{ id:38, unit:"", emp:"", name:"游昕霓", food:"葷食", note:""},
+{ id:39, unit:"XE0", emp:"13D012", name:"洪偉倫", food:"葷食", note:""},
+{ id:40, unit:"", emp:"00C014", name:"許淑惠", food:"葷食", note:""},
+{ id:41, unit:"", emp:"08D052", name:"許雅惠", food:"葷食", note:""},
+{ id:42, unit:"XE0", emp:"01F076", name:"廖湘君", food:"葷食", note:""},
+{ id:43, unit:"XE0", emp:"06I085", name:"蔡惠珍", food:"葷食", note:""},
+{ id:44, unit:"XE5", emp:"950110", name:"曾富田", food:"葷食", note:"自駕前往"},
+{ id:45, unit:"", emp:"07I258", name:"呂思柔", food:"葷食", note:"自駕前往"},
+{ id:46, unit:"", emp:"", name:"曾子芸", food:"葷食", note:"自駕前往"},
+{ id:47, unit:"", emp:"", name:"曾子芹", food:"葷食", note:"自駕前往"},
+{ id:48, unit:"XE0", emp:"05C095", name:"郭家秝", food:"葷食", note:""},
+{ id:49, unit:"", emp:"", name:"許采翎", food:"葷食", note:""},
+{ id:50, unit:"XE0", emp:"035138", name:"宗佩燕", food:"葷食", note:""},
+{ id:51, unit:"", emp:"", name:"許宏任", food:"葷食", note:""},
+{ id:52, unit:"", emp:"", name:"許智媛", food:"葷食", note:""},
+{ id:53, unit:"XE0", emp:"05C096", name:"鄭麗恩", food:"葷食", note:""},
+{ id:54, unit:"", emp:"05C097", name:"陳慧娟", food:"葷食", note:""},
+{ id:55, unit:"XE0", emp:"00OB86", name:"盧柔靜", food:"葷食", note:""},
+{ id:56, unit:"", emp:"", name:"盧建銘", food:"葷食", note:""},
+{ id:57, unit:"", emp:"", name:"廖秋韻", food:"葷食", note:""},
+{ id:58, unit:"XX6", emp:"00OB12", name:"林秀貞", food:"葷食", note:""},
+{ id:59, unit:"", emp:"", name:"林夏嬌", food:"葷食", note:""},
+{ id:60, unit:"", emp:"", name:"高麗珠", food:"葷食", note:""},
+{ id:61, unit:"", emp:"", name:"吳敏瑜", food:"葷食", note:""},
+{ id:62, unit:"XE2", emp:"830247", name:"王瑞豪", food:"葷食", note:""},
+{ id:63, unit:"", emp:"95C545", name:"楊小華", food:"葷食", note:""},
+{ id:64, unit:"XX5", emp:"05C008", name:"游淑如", food:"葷食", note:""},
+{ id:65, unit:"XX5", emp:"06I131", name:"藍于琴", food:"葷食", note:""},
+{ id:66, unit:"", emp:"", name:"陶幸", food:"葷食", note:""},
+{ id:67, unit:"XX5", emp:"03D034", name:"蘇月娥", food:"葷食", note:""},
+{ id:68, unit:"", emp:"", name:"鄒志興", food:"葷食", note:""},
+{ id:69, unit:"XA3", emp:"025122", name:"廖慧津", food:"葷食", note:""},
+{ id:70, unit:"", emp:"", name:"張欽雄", food:"葷食", note:""},
+{ id:71, unit:"", emp:"", name:"張瑀倪", food:"葷食", note:""},
+{ id:72, unit:"XX5", emp:"96C094", name:"陳慧欣", food:"葷食", note:""},
+{ id:73, unit:"", emp:"", name:"王士", food:"葷食", note:""},
+{ id:74, unit:"XA2", emp:"14V009", name:"沈明哲", food:"葷食", note:""},
+{ id:75, unit:"", emp:"", name:"張素萍", food:"葷食", note:""},
+{ id:76, unit:"XA3", emp:"050112", name:"周哲緯", food:"葷食", note:""},
+{ id:77, unit:"", emp:"", name:"李軒萍", food:"葷食", note:""},
+{ id:78, unit:"XX5", emp:"13D022", name:"陳昱宏", food:"葷食", note:""},
+{ id:79, unit:"", emp:"", name:"林長輝", food:"葷食", note:""},
+{ id:80, unit:"XX5", emp:"14I350", name:"邱玉君", food:"葷食", note:""},
+{ id:81, unit:"", emp:"", name:"邱渝愷", food:"葷食", note:""},
+{ id:82, unit:"XX5", emp:"05C039", name:"林子晴", food:"葷食", note:""},
+{ id:83, unit:"", emp:"", name:"張增堯", food:"葷食", note:""},
+{ id:84, unit:"XE5", emp:"030043", name:"張順傑", food:"葷食", note:""},
+{ id:85, unit:"", emp:"", name:"王瑩姿", food:"葷食", note:""},
+{ id:86, unit:"", emp:"", name:"張竣凱", food:"葷食", note:""},
+{ id:87, unit:"XE3", emp:"070137", name:"張家誠", food:"葷食", note:""},
+{ id:88, unit:"", emp:"", name:"賴俐君", food:"葷食", note:""},
+{ id:89, unit:"", emp:"", name:"張珉睿", food:"葷食", note:""},
+{ id:90, unit:"", emp:"", name:"張又心", food:"葷食", note:""},
+{ id:91, unit:"XX5", emp:"03OB44", name:"宋漢章", food:"葷食", note:""},
+{ id:92, unit:"", emp:"", name:"張麗娟", food:"葷食", note:""},
+{ id:93, unit:"", emp:"05D030", name:"林柏宇", food:"葷食", note:""},
+{ id:94, unit:"", emp:"06F020", name:"鄭閔謙", food:"葷食", note:""},
+{ id:95, unit:"XX5", emp:"02OB95", name:"陳賢美", food:"葷食", note:""},
+{ id:96, unit:"XX5", emp:"05C026", name:"游敏雲", food:"葷食", note:""},
+{ id:97, unit:"", emp:"805625", name:"王秀春", food:"素食", note:""},
+{ id:98, unit:"XE2", emp:"920137", name:"王諸崑", food:"葷食", note:""},
+{ id:99, unit:"", emp:"", name:"蔡佩妏", food:"葷食", note:""},
+{ id:100, unit:"", emp:"", name:"蔡長法", food:"葷食", note:""},
+{ id:101, unit:"", emp:"", name:"陳玉桂", food:"葷食", note:""},
+{ id:102, unit:"XX5", emp:"12I308", name:"黃淑婷", food:"葷食", note:""},
+{ id:103, unit:"", emp:"", name:"買占元", food:"葷食", note:""},
+{ id:104, unit:"", emp:"", name:"吳源祐", food:"葷食", note:""},
+{ id:105, unit:"", emp:"", name:"陳冠融", food:"葷食", note:""},
+{ id:106, unit:"XE0", emp:"05C094", name:"林麗卿", food:"葷食", note:""},
+{ id:107, unit:"", emp:"", name:"林纓安", food:"葷食", note:""},
+{ id:108, unit:"XA5", emp:"065107", name:"狩谷綾子", food:"葷食", note:"工作人員"},
+{ id:109, unit:"XA5", emp:"020135", name:"徐福斌", food:"葷食", note:"工作人員"},
+{ id:110, unit:"", emp:"", name:"黃子晏", food:"葷食", note:""},
+{ id:111, unit:"", emp:"", name:"徐若恩", food:"葷食", note:""},
+{ id:112, unit:"XA5", emp:"085035", name:"曾貴瑛", food:"葷食", note:"工作人員"},
+{ id:113, unit:"", emp:"", name:"陳朝璋", food:"葷食", note:""},
+{ id:114, unit:"XE0", emp:"885008", name:"黃玉枝", food:"葷食", note:""},
+{ id:115, unit:"XA1", emp:"A13101", name:"八波正洋", food:"葷食", note:"只參加上午活動"},
+{ id:116, unit:"", emp:"", name:"八波絵梨佳", food:"葷食", note:"只參加上午活動"},
+{ id:117, unit:"", emp:"", name:"八波陶梧", food:"葷食", note:"只參加上午活動"},
+{ id:118, unit:"", emp:"", name:"八波遼馬", food:"葷食", note:"只參加上午活動"}
+];
 
 const tableBody = document.getElementById("tableBody");
 const search = document.getElementById("search");
 
 function render(keyword="") {
   tableBody.innerHTML = "";
-
-  rawData
-    .filter(row =>
-      Object.values(row).some(v =>
-        String(v).includes(keyword)
-      )
+  data
+    .filter(d =>
+      Object.values(d).some(v => String(v).includes(keyword))
     )
-    .forEach(row => {
-      const tr = `
+    .forEach(d => {
+      tableBody.innerHTML += `
         <tr>
-          <td>${row["ID"] || ""}</td>
-          <td>${row["預算單位"] || ""}</td>
-          <td>${row["員工代號"] || ""}</td>
-          <td>${row["姓名"] || ""}</td>
-          <td>${row["飲食習慣"] || ""}</td>
-          <td>${row["備註"] || ""}</td>
+          <td>${d.id}</td>
+          <td>${d.unit}</td>
+          <td>${d.emp}</td>
+          <td>${d.name}</td>
+          <td>${d.food}</td>
+          <td>${d.note}</td>
         </tr>
       `;
-      tableBody.innerHTML += tr;
     });
 }
 
 search.addEventListener("input", e => render(e.target.value));
+render();
 </script>
 
 </body>
